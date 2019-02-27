@@ -11,14 +11,15 @@
   nil)
 
 (defn start
-  "Run when the page is first time loaded, creates initial environment"
+  "Initializes the game, intented to use when the page is reloaded."
+  
   []
   (let [dom-element (ocall js/document "getElementById" "app")]
     (reset! message "He!!")
     (oset! dom-element "innerHTML" @message)))
 
 (defn init
-  "Initializes the game, intented to use when the page is reloaded. It also 
+  "Run when the page is first time loaded, creates initial environment It also 
   calls `start`"
   []
   (reset! message "Hello, World!")

@@ -9,11 +9,11 @@
   nil)
 
 (defn start
-  "Run when the page is first time loaded, creates initial environment"
+  "Initializes the game, intented to use when the page is reloaded"
   []
   nil)
 
 (defn init
-  "Initializes the game, intented to use when the page is reloaded"
+  "Run when the page is first time loaded, creates initial environment"
   []
   nil)
