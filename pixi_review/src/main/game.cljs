@@ -10,13 +10,17 @@
   nil)
 
 (defn start
-  "Run when the page is first time loaded, creates initial environment"
+  "Initializes the game, intented to use when the page is reloaded"
   []
   nil)
 
 (defn init
-  "Initializes the game, intented to use when the page is reloaded"
+  "Run when the page is first time loaded, creates initial environment"
   []
-  (if (ocall pixi/utils "isWebGLSupported")
-    (log "WebGL")
-    (log "Canvas")))
+  (let [app (new pixi/Application (clj->js {:width 256
+                                            :height 256
+                                            :antialias true
+                                            :transparent false
+                                            :resolution 1}))]
+    (log "Appending a pixi stage")
+    (ocall js/document "body.appendChild" (oget app "view"))))
