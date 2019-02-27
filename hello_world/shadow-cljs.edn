@@ -1,0 +1,20 @@
+{:source-paths ["src/main"
+                "src/test"
+                "src/dev"]
+ 
+ :dependencies [[binaryage/devtools "0.9.10"]
+                [binaryage/oops      "0.6.4"]
+                [cider/cider-nrepl   "0.19.0"]
+                [org.clojure/core.async "0.4.490"]]
+ 
+ :nrepl {:port 8202}
+ 
+ :builds {:dev 
+          {:target :browser
+           :output-to "main.js"
+           :modules {:main {:init-fn game/init}}
+           :devtools {:http-root "public"
+                      :http-port 8000
+                      :before-load game/destroy
+                      :after-load  game/start}}}}
+

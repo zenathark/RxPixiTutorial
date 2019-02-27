@@ -1,0 +1,12 @@
+# Node files
+node_modules/
+
+# Shadow-cljs files
+.shadow-cljs/
+.nrepl-port
+
+# Generated javascript
+public/js/
+
+# tags
+tags*
