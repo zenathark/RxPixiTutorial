@@ -5,6 +5,12 @@
 
 
 (defonce app (atom nil))
+(defonce game-state (atom nil))
+
+(defn init-game-state
+  "Initialize the state of the game"
+  []
+  (reset! game-state {:player {:pos {:x 20 :y 20}}}))
 
 (defn destroy
   "Removes all transtient data between hot reloads"
@@ -13,13 +19,15 @@
 
 (defn start
   "Initializes the game, intented to use when the page is reloaded"
-  []
-  nil)
+  [])
 
 (defn setup
   []
   (let [sprite (new pixi/Sprite (oget pixi/loader "resources.ship00.texture"))]
-    (ocall @app "stage.addChild" sprite)))
+    (init-game-state)
+    (ocall @app "stage.addChild" sprite)
+    (oset! sprite "x" (get-in @game-state [:player :pos :x]))
+    (oset! sprite "y" (get-in @game-state [:player :pos :y]))))
 
 (defn init
   "Run when the page is first time loaded, creates initial environment"
