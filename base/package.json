@@ -1,0 +1,21 @@
+{
+  "name": "RxPixiGame",
+  "version": "0.0.1",
+  "description": "A game made in pixijs using reactive programming",
+  "main": "index.js",
+  "repository": "https://github.com/juancgalan/rx-pixi-game",
+  "author": "Juan Carlos (Zenathark) Galan Hernandez",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "watch": "shadow-cljs watch dev",
+    "compile": "shadow-cljs compile dev",
+    "clj-repl": "shadow-cljs clj-repl",
+    "build": "shadow-cljs build dev",
+    "cljs-repl": "shadow-cljs cljs-repl dev"
+  },
+  "dependencies": {
+    "pixi.js": "4.8.5",
+    "shadow-cljs": "2.7.31",
+  }
+}
