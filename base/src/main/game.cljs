@@ -4,10 +4,12 @@
 
 
 (defn destroy
+  "Removes all transtient data between hot reloads"
   []
   nil)
 
 (defn start
+  "Run when the page is first time loaded, creates initial environment"
   []
   nil)
 
