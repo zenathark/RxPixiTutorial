@@ -8,12 +8,26 @@
 
 (defonce game-state (atom nil))
 
+;;; -------- Begin Input Section -----------------------------------------
+
+(defn ^:export keyboard-listener
+  "Listens to keyboard input"
+  [event]
+  (log event))
+
+(defn create-keyboard-listener
+  "Adds a new listener to the js document event"
+  []
+  (ocall js/document "addEventListener" "keydown" keyboard-listener))
+
+;;; -------- End Input Section -----------------------------------------
+
 ;;; -------- Begin Player Section -----------------------------------------
 
 (defn new-player
   "Creates a new player data"
   []
-  {:pos {:x 0 :y 0}
+  {:pos {:x 230 :y 470}
    :direction {:x 2 :y 1}
    :sprite (gobj/new-sprite :ship00)})
 
@@ -41,7 +55,7 @@
 ;;; -------- Beging Main Stage Section ------------------------------
 
 (def functions-for-loop
-  [update-player!
+  [;update-player!
    render-player!])
 
 (defn add-to-ticker!
@@ -63,6 +77,7 @@
   [engine]
   (let [stage (gobj/new-stage)
         player (new-player)]
+    (gobj/add-sprite! stage :bg00)
     (gobj/add-child! stage (:sprite player) :ship00)
     (swap! game-state assoc :player player)
     (add-to-ticker! engine)
@@ -77,8 +92,8 @@
 (defn new-engine!
   "Creates a new engine for rendering and sets it to the global state"
   []
-  (swap! game-state assoc :engine (eng/new-pixi-engine {:width 256
-                                                        :height 256
+  (swap! game-state assoc :engine (eng/new-pixi-engine {:width 512
+                                                        :height 512
                                                         :antialias true
                                                         :transparent false
                                                         :resolution 1})))
@@ -100,13 +115,16 @@
   (eng/set-stage! (:engine @game-state) new-main-stage!)
   (log "Appending a pixi stage")
   (eng/attach! (:engine @game-state))
-  (eng/start-game-loop! (:engine @game-state)))
+  (eng/start-game-loop! (:engine @game-state))
+  )
 
 (defn init
   "Run when the page is first time loaded, creates initial environment"
   []
   (log "Load resources")
-  (res/add-assets! res/pixi-resource-manager [[:ship00 "2.png"]] "assets/")
-  (res/load! res/pixi-resource-manager "assets/" start))
+  (res/add-assets! res/pixi-resource-manager [[:ship00 "2.png"]
+                                              [:bg00 "5.png"]] "assets/")
+  (res/load! res/pixi-resource-manager "assets/" start)
+  (create-keyboard-listener))
 
 ;;; -------- End Setup Section -----------------------------------
