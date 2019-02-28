@@ -14,6 +14,7 @@
   [game-state]
   [;update-player!
    (partial py/render-player! game-state)
+   (partial alien/update-enemy! game-state)
    (partial alien/render-enemy! game-state)
    (partial bl/update-bullet! game-state)
    (partial bl/render-bullet! game-state)

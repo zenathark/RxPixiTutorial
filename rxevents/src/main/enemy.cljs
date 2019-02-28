@@ -11,6 +11,7 @@
   []
   {:pos {:x 230 :y 30}
    :speed 3
+   :direction 1
    :sprite (gobj/new-sprite :enemy00)
    :state :alive})
 
@@ -28,4 +29,17 @@
 (defn update-enemy!
   "Updates enemy position. If hits a wall, the direction is reversed"
   [game-state]
-  nil)
+  (let [{{x :x y :y} :pos
+         state :state
+         direction :direction
+         speed :speed} (get @game-state :enemy)
+        maybe-x (+ (* direction speed) x)
+        out? (not (eng/intersect? maybe-x {:o 0 :length 488}))
+        new-x (if out? x maybe-x)
+        new-y (if out? (+ y speed) y)
+        new-dir (if out? (* -1 direction) direction)]
+     (when (= state :alive)
+      (swap! game-state assoc-in [:enemy] (merge (:enemy @game-state)
+                                                 {:pos {:x new-x
+                                                        :y new-y}
+                                                  :direction new-dir})))))
