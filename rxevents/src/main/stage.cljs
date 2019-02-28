@@ -16,7 +16,8 @@
    (partial py/render-player! game-state)
    (partial alien/render-enemy! game-state)
    (partial bl/update-bullet! game-state)
-   (partial bl/render-bullet! game-state)])
+   (partial bl/render-bullet! game-state)
+   (partial bl/check-collision! game-state)])
 
 (defn add-to-ticker!
   "Adds the required events to the ticker"

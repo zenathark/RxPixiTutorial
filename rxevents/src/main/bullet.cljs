@@ -30,6 +30,18 @@
                   (gobj/translate! sprite pos))
       nil)))
 
+(defn check-collision!
+  "Checks if the bullet collides with an enemy"
+  [game-state]
+  (let [{bx :x by :y} (get-in @game-state [:player :bullets :pos])
+        {ex :x ey :y} (get-in @game-state [:enemy :pos])
+        collide? (and (or (eng/intersect? bx {:o ex :length 20})
+                          (eng/intersect? (+ bx 5) {:o ex :length 20}))
+                      (or (eng/intersect? by {:o ey :length 20})
+                          (eng/intersect? (+ by 5) {:o ey :length 20})))]
+    (when collide?
+      (log "COLLIDE!!"))))
+
 (defn update-bullet!
   "Update bullet's position and state"
   [game-state]
