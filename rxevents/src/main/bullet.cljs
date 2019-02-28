@@ -35,12 +35,14 @@
   [game-state]
   (let [{bx :x by :y} (get-in @game-state [:player :bullets :pos])
         {ex :x ey :y} (get-in @game-state [:enemy :pos])
+        enemy-state (get-in @game-state [:enemy :state])
         collide? (and (or (eng/intersect? bx {:o ex :length 20})
                           (eng/intersect? (+ bx 5) {:o ex :length 20}))
                       (or (eng/intersect? by {:o ey :length 20})
                           (eng/intersect? (+ by 5) {:o ey :length 20})))]
-    (when collide?
-      (log "COLLIDE!!"))))
+    (when (and (= enemy-state :alive) collide?)
+      (swap! game-state assoc-in [:player :bullets :state] :outscreen)
+      (swap! game-state assoc-in [:enemy :state] :dead))))
 
 (defn update-bullet!
   "Update bullet's position and state"

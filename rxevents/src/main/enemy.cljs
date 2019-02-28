@@ -11,13 +11,19 @@
   []
   {:pos {:x 230 :y 30}
    :speed 3
-   :sprite (gobj/new-sprite :enemy00)})
+   :sprite (gobj/new-sprite :enemy00)
+   :state :alive})
 
 (defn render-enemy!
   "Updates the sprite with the enemy data"
   [game-state]
-  (let [{sprite :sprite pos :pos} (:enemy @game-state)]
-    (gobj/translate! sprite pos)))
+  (let [{sprite :sprite pos :pos state :state} (:enemy @game-state)
+        stage @(eng/get-stage (:engine @game-state))
+        in-stage? (gobj/get-child stage :enemy00)]
+    (case state
+      :alive (gobj/translate! sprite pos)
+      :dead (when in-stage?
+              (gobj/remove-child! stage :enemy00)))))
 
 (defn update-enemy!
   "Updates enemy position. If hits a wall, the direction is reversed"
