@@ -3,33 +3,62 @@
             [oops.core   :refer [oget ocall oset!]]
             [clopi.pixi-engine :as eng]
             [clopi.game-object :as gobj]
-            [clopi.resource-manager :as res]))
+            [clopi.resource-manager :as res]
+            [clojure.core.async :as rx]))
 
 
 (defonce game-state (atom nil))
 
 ;;; -------- Begin Input Section -----------------------------------------
 
-(defn ^:export keyboard-listener
-  "Listens to keyboard input"
-  [event]
-  (let [key (oget event "key")
-        speed (get-in @game-state [:player :speed])]
-    (case key
-      "a" (let [x (get-in @game-state [:player :pos :x])
-                maybe-x (- x speed)
-                new-x (if (eng/intersect? maybe-x {:o 0 :length 478}) maybe-x x)]
-            (swap! game-state assoc-in [:player :pos :x] new-x))
-      "d" (let [x (get-in @game-state [:player :pos :x])
-                maybe-x (+ x speed)
-                new-x (if (eng/intersect? maybe-x {:o 0 :length 478}) maybe-x x)]
-            (swap! game-state assoc-in [:player :pos :x] new-x))
-      nil)))
+
+(defn input-player-movement
+  [update-fn]
+  (let [x (get-in @game-state [:player :pos :x])
+        speed (get-in @game-state [:player :speed])
+        maybe-x (update-fn x speed)
+        new-x (if (eng/intersect? maybe-x {:o 0 :length 478}) maybe-x x)]
+    (swap! game-state assoc-in [:player :pos :x] new-x)))
+
+(defn a-input
+  [e]
+  (input-player-movement #(- %1 %2)))
+
+(defn d-input
+  [e]
+  (input-player-movement #(+ %1 %2)))
+
+(defn new-keyboard-rx
+  "Creates a new multicast observable for a given event over a diven DOM element.
+   It is intended for Reacive Programming using the Clojure.Async library.
+  + Args:
+    - dom-ele DOM object selector
+    - event-string Event string ID on js notation
+  + Returns:
+    A mult channel.
+  "
+  []
+  (let [out-chan (rx/chan)]
+    (letfn [(update-chan [event] (rx/put! out-chan event))]
+      (ocall js/document "addEventListener" "keydown" update-chan))
+    (rx/mult out-chan)))
 
 (defn create-keyboard-listener
   "Adds a new listener to the js document event"
   []
-  (ocall js/document "addEventListener" "keydown" keyboard-listener))
+  (let [kb (new-keyboard-rx)
+        chan-a (rx/chan 1 (filter #(= "a" (oget % "key"))))
+        chan-d (rx/chan 1 (filter #(= "d" (oget % "key"))))
+        tap-a (rx/tap kb chan-a)
+        tap-d (rx/tap kb chan-d)]
+    (rx/go-loop []
+      (when-let [e (rx/<! tap-a)]
+        (a-input [e])
+        (recur)))
+    (rx/go-loop []
+      (when-let [e (rx/<! tap-d)]
+        (d-input [e])
+        (recur)))))
 
 ;;; -------- End Input Section -----------------------------------------
 
