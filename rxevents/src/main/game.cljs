@@ -13,7 +13,12 @@
 (defn ^:export keyboard-listener
   "Listens to keyboard input"
   [event]
-  (log event))
+  (let [key (oget event "key")
+        speed (get-in @game-state [:player :speed])]
+    (case key
+      "a" (swap! game-state update-in [:player :pos :x] #(- % speed))
+      "d" (swap! game-state update-in [:player :pos :x] #(+ % speed))
+      nil)))
 
 (defn create-keyboard-listener
   "Adds a new listener to the js document event"
@@ -29,6 +34,7 @@
   []
   {:pos {:x 230 :y 470}
    :direction {:x 2 :y 1}
+   :speed 3
    :sprite (gobj/new-sprite :ship00)})
 
 (defn render-player!
