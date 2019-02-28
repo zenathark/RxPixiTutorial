@@ -7,7 +7,8 @@
             [clopi.events :as rx]
             [player :as py]
             [bullet :as bl]
-            [enemy :as alien]))
+            [enemy :as alien]
+            ui))
 
 
 (defn functions-for-loop
@@ -18,7 +19,9 @@
    (partial alien/render-enemy! game-state)
    (partial bl/update-bullet! game-state)
    (partial bl/render-bullet! game-state)
-   (partial bl/check-for-collision! game-state)]
+   (partial bl/check-for-collision! game-state)
+   (partial ui/update-score! game-state)
+   (partial ui/render-score! game-state)]
 )
 
 (defn add-to-ticker!
@@ -41,11 +44,14 @@
   (let [stage (gobj/new-stage)
         player (py/new-player)
         bullet (bl/create-bullet)
-        enemy (alien/new-enemy-group 5 "alien" 20 20 30)]
+        enemy (alien/new-enemy-group 5 "alien" 20 20 30)
+        score-ui (ui/new-score-text)]
     (gobj/add-sprite! stage :bg00)
     (gobj/add-child! stage (:sprite player) :ship00)
+    (gobj/add-child! stage (:text score-ui) :score-ui)
     (swap! game-state assoc :player player)
     (swap! game-state assoc :enemy enemy)
+    (swap! game-state assoc :score-ui score-ui)
     (swap! game-state assoc-in [:player :bullets] bullet)
     (add-to-ticker! game-state engine)
     stage))

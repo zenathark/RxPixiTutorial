@@ -42,7 +42,8 @@
                           (eng/intersect? (+ by 5) {:o ey :length 20})))]
     (when collide?
       (swap! game-state assoc-in [:player :bullets :state] :outscreen)
-      (swap! game-state assoc-in [:enemy (:idx enemy) :state] :dead))))
+      (swap! game-state assoc-in [:enemy (:idx enemy) :state] :dead)
+      (swap! game-state update-in [:player :score] #(+ % 5)))))
 
 (defn check-for-collision!
   [game-state]
