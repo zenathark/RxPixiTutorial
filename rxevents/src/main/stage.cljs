@@ -5,7 +5,8 @@
             [clopi.game-object :as gobj]
             [clopi.resource-manager :as res]
             [clopi.events :as rx]
-            [player :as py]))
+            [player :as py]
+            [bullet :as bl]))
 
 
 (defn functions-for-loop
@@ -31,9 +32,11 @@
   "Creates a main pixi stage"
   [game-state engine]
   (let [stage (gobj/new-stage)
-        player (py/new-player)]
+        player (py/new-player)
+        bullet (bl/create-bullet)]
     (gobj/add-sprite! stage :bg00)
     (gobj/add-child! stage (:sprite player) :ship00)
+    (gobj/add-child! stage (:sprite bullet) :bullet00)
     (swap! game-state assoc :player player)
     (add-to-ticker! game-state engine)
     stage))

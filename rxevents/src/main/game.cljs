@@ -84,7 +84,8 @@
   []
   (log "Load resources")
   (res/add-assets! res/pixi-resource-manager [[:ship00 "2.png"]
-                                              [:bg00 "5.png"]] "assets/")
+                                              [:bg00 "5.png"]
+                                              [:bullet00 "4.png"]] "assets/")
   (res/load! res/pixi-resource-manager "assets/" start))
 
 ;;; -------- End Setup Section -----------------------------------
