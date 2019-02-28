@@ -18,7 +18,8 @@
    (partial alien/render-enemy! game-state)
    (partial bl/update-bullet! game-state)
    (partial bl/render-bullet! game-state)
-   (partial bl/check-collision! game-state)])
+   (partial bl/check-for-collision! game-state)]
+)
 
 (defn add-to-ticker!
   "Adds the required events to the ticker"
@@ -40,10 +41,9 @@
   (let [stage (gobj/new-stage)
         player (py/new-player)
         bullet (bl/create-bullet)
-        enemy (alien/new-enemy)]
+        enemy (alien/new-enemy-group 5 "alien" 20 20 30)]
     (gobj/add-sprite! stage :bg00)
     (gobj/add-child! stage (:sprite player) :ship00)
-    (gobj/add-child! stage (:sprite enemy) :enemy00)
     (swap! game-state assoc :player player)
     (swap! game-state assoc :enemy enemy)
     (swap! game-state assoc-in [:player :bullets] bullet)

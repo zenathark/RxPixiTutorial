@@ -12,6 +12,7 @@
   {:pos {:x 230 :y 470}
    :direction {:x 2 :y 1}
    :speed 3
+   :score 0
    :sprite (gobj/new-sprite :ship00)})
 
 (defn render-player!

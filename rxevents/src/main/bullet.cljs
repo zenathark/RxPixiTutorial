@@ -32,17 +32,26 @@
 
 (defn check-collision!
   "Checks if the bullet collides with an enemy"
-  [game-state]
-  (let [{bx :x by :y} (get-in @game-state [:player :bullets :pos])
-        {ex :x ey :y} (get-in @game-state [:enemy :pos])
-        enemy-state (get-in @game-state [:enemy :state])
+  [game-state enemy player]
+  (let [{bx :x by :y} (get-in player [:bullets :pos])
+        {ex :x ey :y} (get-in enemy [:pos])
+        enemy-state (get-in enemy [:state])
         collide? (and (or (eng/intersect? bx {:o ex :length 20})
                           (eng/intersect? (+ bx 5) {:o ex :length 20}))
                       (or (eng/intersect? by {:o ey :length 20})
                           (eng/intersect? (+ by 5) {:o ey :length 20})))]
-    (when (and (= enemy-state :alive) collide?)
+    (when collide?
       (swap! game-state assoc-in [:player :bullets :state] :outscreen)
-      (swap! game-state assoc-in [:enemy :state] :dead))))
+      (swap! game-state assoc-in [:enemy (:idx enemy) :state] :dead))))
+
+(defn check-for-collision!
+  [game-state]
+  (let [player (:player @game-state)]
+    (doseq [e (:enemy @game-state)
+            :let [bullet-st (get-in player [:bullets :state])
+                  enemy-st (:state e)]
+            :when (and (= enemy-st :alive) (= bullet-st :onscreen))]
+      (check-collision! game-state e player))))
 
 (defn update-bullet!
   "Update bullet's position and state"
