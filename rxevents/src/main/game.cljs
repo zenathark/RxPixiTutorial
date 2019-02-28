@@ -16,8 +16,14 @@
   (let [key (oget event "key")
         speed (get-in @game-state [:player :speed])]
     (case key
-      "a" (swap! game-state update-in [:player :pos :x] #(- % speed))
-      "d" (swap! game-state update-in [:player :pos :x] #(+ % speed))
+      "a" (let [x (get-in @game-state [:player :pos :x])
+                maybe-x (- x speed)
+                new-x (if (eng/intersect? maybe-x {:o 0 :length 478}) maybe-x x)]
+            (swap! game-state assoc-in [:player :pos :x] new-x))
+      "d" (let [x (get-in @game-state [:player :pos :x])
+                maybe-x (+ x speed)
+                new-x (if (eng/intersect? maybe-x {:o 0 :length 478}) maybe-x x)]
+            (swap! game-state assoc-in [:player :pos :x] new-x))
       nil)))
 
 (defn create-keyboard-listener
