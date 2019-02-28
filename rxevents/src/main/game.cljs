@@ -31,11 +31,15 @@
 
 (defn space-input
   [e]
-  (let [{x :x y :y} (get-in @game-state [:player :pos])]
-    (log (get-in @game-state [:player :bullets :pos]))
-    (swap! game-state assoc-in [:player :bullets :pos] {:x (+ 14 x)
-                                                        :y (- y 6)})
-    (swap! game-state assoc-in [:player :bullets :state] :onscreen)))
+  (let [{x :x y :y} (get-in @game-state [:player :pos])
+        state (get-in @game-state [:player :bullets :state])]
+    (case state
+      :outscreen 
+      (do
+        (swap! game-state assoc-in [:player :bullets :pos] {:x (+ 14 x)
+                                                            :y (- y 6)})
+        (swap! game-state assoc-in [:player :bullets :state] :onscreen))
+      nil)))
 
 (defn create-keyboard-listener
   "Adds a new listener to the js document event"

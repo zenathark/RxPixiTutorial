@@ -17,13 +17,28 @@
 (defn render-bullet!
   "Updates the bullet sprite"
   [game-state]
-  (let [{sprite :sprite pos :pos state :state} (get-in @game-state [:player :bullets])]
-    (gobj/translate! sprite pos)))
+  (let [{sprite :sprite pos :pos state :state} (get-in @game-state [:player :bullets])
+        stage @(eng/get-stage (:engine @game-state))
+        in-stage? (gobj/get-child stage :bullet00)]
+
+    (case state
+      :outscreen (when in-stage? 
+                   (gobj/remove-child! stage :bullet00))
+      :onscreen (do
+                  (when (not in-stage?)
+                    (gobj/add-child! stage sprite :bullet00))
+                  (gobj/translate! sprite pos))
+      nil)))
 
 (defn update-bullet!
   "Update bullet's position and state"
   [game-state]
   (let [{{x :x y :y} :pos
          state :state
-         speed :speed} (get-in @game-state [:player :bullets])]
-    (swap! game-state assoc-in [:player :bullets :pos :y] (- y speed))))
+         speed :speed} (get-in @game-state [:player :bullets])
+        new-y (- y speed)]
+    (case state
+      :onscreen (if (neg? new-y)
+                  (swap! game-state assoc-in [:player :bullets :state] :outscreen)
+                  (swap! game-state assoc-in [:player :bullets :pos :y] new-y))
+      nil)))

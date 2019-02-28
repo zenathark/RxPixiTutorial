@@ -38,7 +38,6 @@
         bullet (bl/create-bullet)]
     (gobj/add-sprite! stage :bg00)
     (gobj/add-child! stage (:sprite player) :ship00)
-    (gobj/add-child! stage (:sprite bullet) :bullet00)
     (swap! game-state assoc :player player)
     (swap! game-state assoc-in [:player :bullets] bullet)
     (add-to-ticker! game-state engine)

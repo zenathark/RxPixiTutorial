@@ -155,6 +155,7 @@
   (remove-child!
    [t child-key]
    (pixi-remove-child (raw t) (raw (child-key @(:childs t))))
+   (swap! (:childs t) dissoc child-key)
    nil)
   (translate!
     [t p]
