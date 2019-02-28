@@ -10,7 +10,7 @@
   "Creates a new bullet game object"
   []
   {:pos {:x 0 :y 0}
-   :speed 3
+   :speed 10
    :sprite (gobj/new-sprite :bullet00)
    :state :outscreen})
 
@@ -26,4 +26,4 @@
   (let [{{x :x y :y} :pos
          state :state
          speed :speed} (get-in @game-state [:player :bullets])]
-    nil))
+    (swap! game-state assoc-in [:player :bullets :pos :y] (- y speed))))

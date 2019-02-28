@@ -13,6 +13,7 @@
   [game-state]
   [;update-player!
    (partial py/render-player! game-state)
+   (partial bl/update-bullet! game-state)
    (partial bl/render-bullet! game-state)])
 
 (defn add-to-ticker!
