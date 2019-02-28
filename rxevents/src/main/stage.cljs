@@ -6,13 +6,15 @@
             [clopi.resource-manager :as res]
             [clopi.events :as rx]
             [player :as py]
-            [bullet :as bl]))
+            [bullet :as bl]
+            [enemy :as alien]))
 
 
 (defn functions-for-loop
   [game-state]
   [;update-player!
    (partial py/render-player! game-state)
+   (partial alien/render-enemy! game-state)
    (partial bl/update-bullet! game-state)
    (partial bl/render-bullet! game-state)])
 
@@ -35,10 +37,13 @@
   [game-state engine]
   (let [stage (gobj/new-stage)
         player (py/new-player)
-        bullet (bl/create-bullet)]
+        bullet (bl/create-bullet)
+        enemy (alien/new-enemy)]
     (gobj/add-sprite! stage :bg00)
     (gobj/add-child! stage (:sprite player) :ship00)
+    (gobj/add-child! stage (:sprite enemy) :enemy00)
     (swap! game-state assoc :player player)
+    (swap! game-state assoc :enemy enemy)
     (swap! game-state assoc-in [:player :bullets] bullet)
     (add-to-ticker! game-state engine)
     stage))

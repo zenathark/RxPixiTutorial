@@ -81,7 +81,7 @@
   (eng/stop-game-loop! (:engine @game-state))
   (st/destroy-main-stage! game-state (:engine @game-state))
   (destroy-listeners))
-
+ 
 (defn start
   "Initializes the game, intented to use when the page is reloaded"
   []
@@ -100,7 +100,8 @@
   (log "Load resources")
   (res/add-assets! res/pixi-resource-manager [[:ship00 "2.png"]
                                               [:bg00 "5.png"]
-                                              [:bullet00 "4.png"]] "assets/")
+                                              [:bullet00 "4.png"]
+                                              [:enemy00 "10.png"]] "assets/")
   (res/load! res/pixi-resource-manager "assets/" start))
 
 ;;; -------- End Setup Section -----------------------------------
