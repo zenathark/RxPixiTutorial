@@ -4,13 +4,12 @@
             [clopi.pixi-engine :as eng]
             [clopi.game-object :as gobj]
             [clopi.resource-manager :as res]
-            [clojure.core.async :as rx]))
+            [clopi.events :as rx]))
 
 
-(defonce game-state (atom nil))
+(defonce game-state (atom {:observers []}))
 
 ;;; -------- Begin Input Section -----------------------------------------
-
 
 (defn input-player-movement
   [update-fn]
@@ -28,37 +27,23 @@
   [e]
   (input-player-movement #(+ %1 %2)))
 
-(defn new-keyboard-rx
-  "Creates a new multicast observable for a given event over a diven DOM element.
-   It is intended for Reacive Programming using the Clojure.Async library.
-  + Args:
-    - dom-ele DOM object selector
-    - event-string Event string ID on js notation
-  + Returns:
-    A mult channel.
-  "
-  []
-  (let [out-chan (rx/chan)]
-    (letfn [(update-chan [event] (rx/put! out-chan event))]
-      (ocall js/document "addEventListener" "keydown" update-chan))
-    (rx/mult out-chan)))
-
 (defn create-keyboard-listener
   "Adds a new listener to the js document event"
+  [engine]
+  (let [ob1 (rx/add-observer (get-in engine [:events :kbdown])
+                             a-input
+                             (filter #(= "a" (oget % "key"))))
+        ob2 (rx/add-observer (get-in engine [:events :kbdown])
+                             d-input
+                             (filter #(= "d" (oget % "key"))))]
+    (swap! game-state update :observers conj ob1 ob2)))
+
+(defn destroy-listeners
+  "Destroys all listeners from the engine"
   []
-  (let [kb (new-keyboard-rx)
-        chan-a (rx/chan 1 (filter #(= "a" (oget % "key"))))
-        chan-d (rx/chan 1 (filter #(= "d" (oget % "key"))))
-        tap-a (rx/tap kb chan-a)
-        tap-d (rx/tap kb chan-d)]
-    (rx/go-loop []
-      (when-let [e (rx/<! tap-a)]
-        (a-input [e])
-        (recur)))
-    (rx/go-loop []
-      (when-let [e (rx/<! tap-d)]
-        (d-input [e])
-        (recur)))))
+  (doseq [e (:observers @game-state)]
+    (rx/remove-observer e))
+  (swap! game-state assoc :observers []))
 
 ;;; -------- End Input Section -----------------------------------------
 
@@ -145,7 +130,8 @@
   "Removes all transtient data between hot reloads"
   []
   (eng/stop-game-loop! (:engine @game-state))
-  (destroy-main-stage! (:engine @game-state)))
+  (destroy-main-stage! (:engine @game-state))
+  (destroy-listeners))
 
 (defn start
   "Initializes the game, intented to use when the page is reloaded"
@@ -157,7 +143,7 @@
   (log "Appending a pixi stage")
   (eng/attach! (:engine @game-state))
   (eng/start-game-loop! (:engine @game-state))
-  )
+  (create-keyboard-listener (:engine @game-state)))
 
 (defn init
   "Run when the page is first time loaded, creates initial environment"
@@ -165,7 +151,6 @@
   (log "Load resources")
   (res/add-assets! res/pixi-resource-manager [[:ship00 "2.png"]
                                               [:bg00 "5.png"]] "assets/")
-  (res/load! res/pixi-resource-manager "assets/" start)
-  (create-keyboard-listener))
+  (res/load! res/pixi-resource-manager "assets/" start))
 
 ;;; -------- End Setup Section -----------------------------------
