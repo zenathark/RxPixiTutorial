@@ -29,6 +29,14 @@
   [e]
   (input-player-movement #(+ %1 %2)))
 
+(defn space-input
+  [e]
+  (let [{x :x y :y} (get-in @game-state [:player :pos])]
+    (log (get-in @game-state [:player :bullets :pos]))
+    (swap! game-state assoc-in [:player :bullets :pos] {:x (+ 14 x)
+                                                        :y (- y 6)})
+    (swap! game-state assoc-in [:player :bullets :state] :onscreen)))
+
 (defn create-keyboard-listener
   "Adds a new listener to the js document event"
   [engine]
@@ -37,8 +45,11 @@
                              (filter #(= "a" (oget % "key"))))
         ob2 (rx/add-observer (get-in engine [:events :kbdown])
                              d-input
-                             (filter #(= "d" (oget % "key"))))]
-    (swap! game-state update :observers conj ob1 ob2)))
+                             (filter #(= "d" (oget % "key"))))
+        ob3 (rx/add-observer (get-in engine [:events :kbdown])
+                             space-input
+                             (filter #(= " " (oget % "key"))))]
+    (swap! game-state update :observers conj ob1 ob2 ob3)))
 
 (defn destroy-listeners
   "Destroys all listeners from the engine"

@@ -12,13 +12,13 @@
   {:pos {:x 0 :y 0}
    :speed 3
    :sprite (gobj/new-sprite :bullet00)
-   :state ::outscreen})
+   :state :outscreen})
 
 (defn render-bullet!
   "Updates the bullet sprite"
   [game-state]
   (let [{sprite :sprite pos :pos state :state} (get-in @game-state [:player :bullets])]
-    nil))
+    (gobj/translate! sprite pos)))
 
 (defn update-bullet!
   "Update bullet's position and state"

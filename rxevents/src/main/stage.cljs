@@ -12,7 +12,8 @@
 (defn functions-for-loop
   [game-state]
   [;update-player!
-   (partial py/render-player! game-state)])
+   (partial py/render-player! game-state)
+   (partial bl/render-bullet! game-state)])
 
 (defn add-to-ticker!
   "Adds the required events to the ticker"
@@ -38,6 +39,7 @@
     (gobj/add-child! stage (:sprite player) :ship00)
     (gobj/add-child! stage (:sprite bullet) :bullet00)
     (swap! game-state assoc :player player)
+    (swap! game-state assoc-in [:player :bullets] bullet)
     (add-to-ticker! game-state engine)
     stage))
 
